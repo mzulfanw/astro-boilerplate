@@ -1,0 +1,31 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import { getAccessToken, clearAuthCookies } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/api/auth"
+import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar"
+
+export const prerender = false
+
+const token = getAccessToken(Astro)
+if (!token) {
+  return Astro.redirect("/login")
+}
+
+let user
+try {
+  user = await getCurrentUser(token)
+} catch {
+  clearAuthCookies(Astro)
+  return Astro.redirect("/login")
+}
+
+const seo = {
+  title: "Dashboard - AstroBP",
+  description: "Your AstroBP dashboard.",
+  noindex: true,
+}
+---
+
+<BaseLayout {seo} hideHeader hideFooter>
+  <DashboardSidebar user={user} client:load />
+</BaseLayout>

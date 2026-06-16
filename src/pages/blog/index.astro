@@ -1,0 +1,64 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import { getPosts } from "@/lib/api/posts"
+import Pagination from "@/components/shared/Pagination.astro"
+import { EmptyState } from "@/components/shared/EmptyState"
+
+export const prerender = false
+
+const pageParam = Number(Astro.url.searchParams.get("page")) || 1
+const currentPage = Math.max(1, pageParam)
+const limit = 10
+const skip = (currentPage - 1) * limit
+
+let posts: import("@/lib/api/posts").Post[] = []
+let totalPages = 0
+try {
+  const result = await getPosts(skip, limit)
+  posts = result.posts
+  totalPages = Math.ceil(result.total / limit)
+} catch {
+  posts = []
+}
+
+const seo = {
+  title: currentPage > 1 ? `Blog - Page ${currentPage} - AstroBP` : "Blog - AstroBP",
+  description: "Read the latest articles and tutorials on AstroBP.",
+}
+---
+
+<BaseLayout {seo}>
+  <section class="mx-auto max-w-5xl px-4 py-12">
+    <h1 class="text-3xl font-bold mb-8">Blog</h1>
+    {posts.length > 0 ? (
+      <>
+        <div class="grid gap-6 md:grid-cols-2 mb-8">
+          {posts.map((post) => (
+            <article>
+              <a
+                href={`/blog/${post.id}`}
+                class="rounded-lg border p-6 block hover:bg-accent transition-colors"
+              >
+                <h2 class="font-semibold text-lg mb-2">{post.title}</h2>
+                <p class="text-sm text-muted-foreground line-clamp-2">{post.body}</p>
+                <div class="mt-3 flex gap-2">
+                  {post.tags.map((tag) => (
+                    <span class="text-xs bg-muted px-2 py-0.5 rounded">{tag}</span>
+                  ))}
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+        {totalPages > 1 && (
+          <Pagination currentPage={currentPage} totalPages={totalPages} baseUrl="/blog" />
+        )}
+      </>
+    ) : (
+      <EmptyState
+        title="No posts yet"
+        description="Check back soon for new articles and tutorials."
+      />
+    )}
+  </section>
+</BaseLayout>

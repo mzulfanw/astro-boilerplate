@@ -1,0 +1,29 @@
+---
+import { Button } from "../ui/button"
+
+export interface Props {
+  user: { firstName: string } | null
+}
+
+const { user } = Astro.props
+---
+
+<header class="border-b">
+  <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+    <div class="flex items-center gap-6">
+      <a href="/" class="font-bold text-lg">AstroBP</a>
+      <a href="/blog" class="text-sm text-muted-foreground hover:text-foreground">Blog</a>
+      {user && <a href="/dashboard" class="text-sm text-muted-foreground hover:text-foreground">Dashboard</a>}
+    </div>
+    <div class="flex items-center gap-3">
+      {user ? (
+          <span class="text-sm text-muted-foreground">{user.firstName}</span>
+          <form method="POST" action="/api/logout">
+            <Button type="submit" variant="ghost" client:load>Logout</Button>
+          </form>
+      ) : (
+        <a href="/login" class="text-sm text-muted-foreground hover:text-foreground">Login</a>
+      )}
+    </div>
+  </nav>
+</header>

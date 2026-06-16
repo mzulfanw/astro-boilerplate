@@ -1,0 +1,80 @@
+---
+import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
+
+interface Props {
+  currentPage: number
+  totalPages: number
+  baseUrl: string
+}
+
+const { currentPage, totalPages, baseUrl } = Astro.props
+
+function pageUrl(page: number) {
+  return page === 1 ? baseUrl : `${baseUrl}?page=${page}`
+}
+
+function getPageNumbers(): (number | "ellipsis")[] {
+  const pages: (number | "ellipsis")[] = []
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i)
+    return pages
+  }
+  pages.push(1)
+  if (currentPage > 3) pages.push("ellipsis")
+  const start = Math.max(2, currentPage - 1)
+  const end = Math.min(totalPages - 1, currentPage + 1)
+  for (let i = start; i <= end; i++) pages.push(i)
+  if (currentPage < totalPages - 2) pages.push("ellipsis")
+  pages.push(totalPages)
+  return pages
+}
+---
+
+<nav role="navigation" aria-label="pagination" class="mx-auto flex w-full justify-center">
+  <ul class="flex flex-row items-center gap-1">
+    <li>
+      <a
+        href={currentPage > 1 ? pageUrl(currentPage - 1) : "#"}
+        aria-label="Go to previous page"
+        class={`inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-md text-sm font-medium ring-sidebar-ring outline-hidden transition-colors focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-2.5 sm:pl-2.5 ${currentPage <= 1 ? "pointer-events-none opacity-50" : "hover:bg-accent hover:text-accent-foreground"}`}
+      >
+        <ChevronLeft className="size-4" />
+        <span class="hidden sm:block">Previous</span>
+      </a>
+    </li>
+    {getPageNumbers().map((page) =>
+      page === "ellipsis" ? (
+        <li>
+          <span
+            aria-hidden
+            class="flex size-9 items-center justify-center"
+          >
+            <MoreHorizontal className="size-4" />
+            <span class="sr-only">More pages</span>
+          </span>
+        </li>
+      ) : (
+        <li>
+          <a
+            href={pageUrl(page)}
+            aria-current={page === currentPage ? "page" : undefined}
+            data-active={page === currentPage}
+            class={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-sidebar-ring outline-hidden transition-colors focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 h-9 w-9 ${page === currentPage ? "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground" : "hover:bg-accent hover:text-accent-foreground"}`}
+          >
+            {page}
+          </a>
+        </li>
+      ),
+    )}
+    <li>
+      <a
+        href={currentPage < totalPages ? pageUrl(currentPage + 1) : "#"}
+        aria-label="Go to next page"
+        class={`inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-md text-sm font-medium ring-sidebar-ring outline-hidden transition-colors focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-2.5 sm:pr-2.5 ${currentPage >= totalPages ? "pointer-events-none opacity-50" : "hover:bg-accent hover:text-accent-foreground"}`}
+      >
+        <span class="hidden sm:block">Next</span>
+        <ChevronRight className="size-4" />
+      </a>
+    </li>
+  </ul>
+</nav>

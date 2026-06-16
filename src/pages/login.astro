@@ -1,0 +1,28 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro"
+import { LoginForm } from "@/components/forms/LoginForm"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
+export const prerender = true
+---
+
+
+<AuthLayout title="Sign in - AstroBP" description="Sign in to your AstroBP dashboard">
+  <Card className="w-full max-w-sm mx-4">
+    <CardHeader className="text-center">
+      <CardTitle>Sign in</CardTitle>
+      <CardDescription>
+        Use <code class="text-xs bg-muted px-1 rounded">emilys / emilyspass</code>
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      <LoginForm client:load />
+    </CardContent>
+  </Card>
+</AuthLayout>

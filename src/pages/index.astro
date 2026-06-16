@@ -1,17 +1,76 @@
 ---
+import { Image } from "astro:assets"
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import { site } from "@/lib/seo"
 
+const seo = {
+  title: "AstroBP - Modern Astro Boilerplate",
+  description:
+    "Production-ready Astro boilerplate with React, Tailwind CSS v4, shadcn/ui, cookie-based auth, SSR blog, and dashboard.",
+  jsonLd: {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: site.siteName,
+    url: Astro.url.origin,
+  },
+}
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout {seo} showAuth={false}>
+  <section class="mx-auto max-w-5xl px-4 py-24 text-center">
+    <h1 class="text-5xl font-bold tracking-tight">Build faster with AstroBP</h1>
+    <p class="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto">
+      Astro + React + Tailwind CSS v4 + shadcn/ui. Auth, blog, and dashboard included.
+    </p>
+    <div class="mt-8 flex justify-center gap-4">
+      <a
+        href="/login"
+        class="inline-flex h-10 items-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+      >
+        Get Started
+      </a>
+      <a
+        href="/blog"
+        class="inline-flex h-10 items-center rounded-md border border-input bg-background px-6 text-sm font-medium shadow-sm hover:bg-accent"
+      >
+        View Blog
+      </a>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-5xl px-4 pb-16">
+    <Image
+      src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=80"
+      alt="Astronaut spacewalk by NASA"
+      width={1200}
+      height={630}
+      class="rounded-lg object-cover shadow-md"
+      loading="eager"
+      decoding="sync"
+      format="webp"
+    />
+  </section>
+
+  <section class="mx-auto max-w-5xl px-4 pb-16">
+    <div class="grid gap-8 md:grid-cols-3">
+      <article class="rounded-lg border p-6">
+        <h2 class="font-semibold">React + shadcn/ui</h2>
+        <p class="mt-2 text-sm text-muted-foreground">
+          Interactive components with React Hook Form, Zod validation, and shadcn/ui.
+        </p>
+      </article>
+      <article class="rounded-lg border p-6">
+        <h2 class="font-semibold">SSR Blog</h2>
+        <p class="mt-2 text-sm text-muted-foreground">
+          Server-rendered blog with external API integration. Data fresh every request.
+        </p>
+      </article>
+      <article class="rounded-lg border p-6">
+        <h2 class="font-semibold">Auth Ready</h2>
+        <p class="mt-2 text-sm text-muted-foreground">
+          Cookie-based auth with httpOnly tokens. Protected dashboard included.
+        </p>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

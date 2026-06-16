@@ -1,0 +1,82 @@
+---
+import "@/styles/globals.css"
+import Header from "@/components/shared/Header.astro"
+import Footer from "@/components/shared/Footer.astro"
+import type { SEO } from "@/lib/seo"
+import { site } from "@/lib/seo"
+
+export interface Props {
+  seo: SEO
+  showAuth?: boolean
+  hideHeader?: boolean
+  hideFooter?: boolean
+}
+
+const { seo, showAuth = true, hideHeader = false, hideFooter = false } = Astro.props
+
+const url = new URL(Astro.request.url)
+const canonical = seo.canonical || url.href
+const ogImage = seo.ogImage
+  ? seo.ogImage.startsWith("/")
+    ? `${url.origin}${seo.ogImage}`
+    : seo.ogImage
+  : `${url.origin}/og.png`
+
+let user = null
+if (showAuth) {
+  try {
+    const token = Astro.cookies.get("access_token")?.value
+    if (token) {
+      const { getCurrentUser } = await import("@/lib/api/auth")
+      user = await getCurrentUser(token)
+    }
+  } catch {}
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#09090b" />
+
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
+    <link rel="canonical" href={canonical} />
+
+    {seo.noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content={seo.ogType || "website"} />
+    <meta property="og:site_name" content={site.siteName} />
+    <meta property="og:locale" content={site.locale} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {seo.jsonLd && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(seo.jsonLd)}
+        is:inline
+      />
+    )}
+  </head>
+  <body>
+    {!hideHeader && <Header user={user} />}
+    <main>
+      <slot />
+    </main>
+    {!hideFooter && <Footer />}
+  </body>
+</html>
