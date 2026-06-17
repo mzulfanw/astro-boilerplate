@@ -4,20 +4,20 @@ ARG API_URL
 ENV PUBLIC_SITE=$PUBLIC_SITE
 ENV API_URL=$API_URL
 
-RUN npm install -g pnpm
+RUN npm install -g pnpm@11
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
 RUN pnpm build
 
 FROM node:24-alpine AS runner
-RUN npm install -g pnpm
+RUN npm install -g pnpm@11
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --prod --frozen-lockfile
 
 COPY --from=builder /app/dist ./dist
