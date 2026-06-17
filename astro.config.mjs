@@ -1,17 +1,15 @@
 import { defineConfig } from "astro/config"
 import { loadEnv } from "vite"
-import vercel from "@astrojs/vercel"
 import sitemap from "@astrojs/sitemap"
 import react from "@astrojs/react"
 import tailwindcss from "@tailwindcss/vite"
+import node from "@astrojs/node"
 
 const ENV = loadEnv(process.env.NODE_ENV || "development", process.cwd(), "")
 
 export default defineConfig({
   site: ENV.PUBLIC_SITE,
-  adapter: vercel({
-    imageService: true,
-  }),
+  adapter: node({ mode: "standalone" }),
   image: {
     domains: ["images.unsplash.com"],
     remotePatterns: [{ hostname: "images.unsplash.com" }],
