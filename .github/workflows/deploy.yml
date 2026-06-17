@@ -10,12 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🔧 Buat .env dari GitHub Secret
+      - name: env
         run: |
           echo "::notice::Copy ENV_PRODUCTION ke .env"
           # echo "${{ secrets.ENV_PRODUCTION }}" > .env
 
-      - name: 🚀 Deploy ke Droplet
+      - name: Deploy to Droplet
         run: |
           echo "::notice::SSH ke droplet & deploy astro"
           echo "  scp .env deploy@<ip>:/opt/astro-boilerplate/.env"
