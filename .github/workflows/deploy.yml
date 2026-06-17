@@ -8,15 +8,25 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: 🔧 Setup .env
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            echo "${{ secrets.ENV_PRODUCTION }}" > /opt/astro-boilerplate/.env
 
-      - name: env
-        run: |
-          echo "::notice::Copy ENV_PRODUCTION ke .env"
-          # echo "${{ secrets.ENV_PRODUCTION }}" > .env
-
-      - name: Deploy to Droplet
-        run: |
-          echo "::notice::SSH ke droplet & deploy astro"
-          echo "  scp .env deploy@<ip>:/opt/astro-boilerplate/.env"
-          echo "  ssh deploy@<ip> \"cd /opt/astro-boilerplate && git pull origin nodejs && docker compose up -d --build && docker image prune -f\""
+      - name: Deploy Astro
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            export GHCR_TOKEN=${{ secrets.GHCR_TOKEN }}
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
+            cd /opt/astro-boilerplate
+            docker compose pull
+            docker compose up -d
+            docker image prune -f

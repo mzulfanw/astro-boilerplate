@@ -14,12 +14,7 @@ services:
     restart: unless-stopped
 
   astro-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        PUBLIC_SITE: ${PUBLIC_SITE}
-        API_URL: ${API_URL}
+    image: ghcr.io/mzulfanw/astro-boilerplate:latest
     container_name: astro-app
     env_file: .env
     restart: unless-stopped
