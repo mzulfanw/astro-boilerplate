@@ -20,6 +20,7 @@
   "dependencies": {
     "@astrojs/node": "^10.1.4",
     "@astrojs/react": "^5.0.7",
+    "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource/inter": "^5.2.8",
     "@hookform/resolvers": "^5.4.0",

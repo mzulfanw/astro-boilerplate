@@ -6,7 +6,7 @@ export const prerender = false
 export const GET: APIRoute = async () => {
   const { posts } = await getAllPosts()
 
-  const staticPages = ["/", "/login", "/blog"]
+  const staticPages = ["/", "/blog"]
   const blogPages = posts.map((p) => `/blog/${p.id}`)
   const allPages = [...staticPages, ...blogPages]
 
@@ -20,6 +20,9 @@ ${urls}
 </urlset>`
 
   return new Response(xml, {
-    headers: { "Content-Type": "application/xml" },
+    headers: {
+      "Content-Type": "application/xml",
+      "Cache-Control": "public, max-age=3600, s-maxage=3600",
+    },
   })
 }
