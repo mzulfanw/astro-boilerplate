@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -24,3 +24,30 @@ jobs:
           build-args: |
             PUBLIC_SITE=${{ secrets.PUBLIC_SITE }}
             API_URL=${{ secrets.API_URL }}
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup .env
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            echo "${{ secrets.ENV_PRODUCTION }}" > /opt/astro-boilerplate/.env
+
+      - name: Deploy Astro
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            export GHCR_TOKEN=${{ secrets.GHCR_TOKEN }}
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
+            cd /opt/astro-boilerplate
+            docker compose pull
+            docker compose up -d
+            docker image prune -f
