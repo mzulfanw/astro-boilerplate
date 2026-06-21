@@ -11,7 +11,7 @@ const currentPage = Math.max(1, pageParam)
 const limit = 10
 const skip = (currentPage - 1) * limit
 
-Astro.response.headers.set("Cache-Control", "public, max-age=300, s-maxage=300")
+Astro.response.headers.set("Cache-Control", "public, max-age=300, s-maxage=300, stale-while-revalidate=86400")
 
 let posts: import("@/lib/api/posts").Post[] = []
 let totalPages = 0

@@ -17,7 +17,7 @@ const { slug } = Astro.params
 const id = Number(slug)
 if (!id) return Astro.redirect("/blog")
 
-Astro.response.headers.set("Cache-Control", "public, max-age=300, s-maxage=300")
+Astro.response.headers.set("Cache-Control", "public, max-age=300, s-maxage=300, stale-while-revalidate=86400")
 
 let post
 let error = false
